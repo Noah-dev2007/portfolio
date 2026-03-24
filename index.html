@@ -1,0 +1,806 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Portfolio — Florian SAVI</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet" />
+
+  <style>
+    /* =============================================
+       VARIABLES — Modifie les couleurs ici !
+    ============================================= */
+    :root {
+      --bg:       #080c10;       /* Fond principal */
+      --surface:  #0d1117;       /* Cartes / blocs */
+      --surface2: #161b22;       /* Cartes au hover */
+      --border:   #21262d;       /* Bordures */
+      --accent:   #ff2244;       /* Rouge vif (couleur principale) */
+      --accent2:  #00c4ff;       /* Bleu (stack tags) */
+      --accent3:  #ff6b35;       /* Orange (déco) */
+      --text:     #e6edf3;       /* Texte principal */
+      --muted:    #7d8590;       /* Texte secondaire */
+      --mono:     'Space Mono', monospace;
+      --sans:     'Syne', sans-serif;
+    }
+
+    /* =============================================
+       RESET & BASE
+    ============================================= */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--sans);
+      line-height: 1.6;
+      overflow-x: hidden;
+    }
+
+    /* =============================================
+       BACKGROUND DÉCORATIF
+    ============================================= */
+    .grid-bg {
+      position: fixed;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(255,34,68,0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,34,68,0.03) 1px, transparent 1px);
+      background-size: 40px 40px;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .orb {
+      position: fixed;
+      border-radius: 50%;
+      filter: blur(120px);
+      pointer-events: none;
+      z-index: 0;
+    }
+    .orb-1 { width: 400px; height: 400px; background: rgba(255,34,68,0.08); top: -100px; left: -100px; }
+    .orb-2 { width: 300px; height: 300px; background: rgba(0,196,255,0.05); bottom: 20%; right: -50px; }
+
+    /* =============================================
+       NAVIGATION
+    ============================================= */
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 20px 48px;
+      background: rgba(8,12,16,0.85);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border-bottom: 1px solid rgba(33,38,45,0.6);
+    }
+
+    .nav-logo {
+      font-family: var(--mono);
+      font-size: 14px;
+      color: var(--accent);
+      letter-spacing: 0.05em;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 32px;
+      list-style: none;
+    }
+
+    .nav-links a {
+      font-family: var(--mono);
+      font-size: 12px;
+      color: var(--muted);
+      text-decoration: none;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      transition: color 0.2s;
+      position: relative;
+      padding-bottom: 4px;
+    }
+
+    .nav-links a::after {
+      content: '';
+      position: absolute;
+      bottom: 0; left: 0;
+      width: 0; height: 1px;
+      background: var(--accent);
+      transition: width 0.25s;
+    }
+
+    .nav-links a:hover { color: var(--accent); }
+    .nav-links a:hover::after { width: 100%; }
+
+    /* =============================================
+       LAYOUT HELPERS
+    ============================================= */
+    .wrapper {
+      position: relative;
+      z-index: 1;
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 0 48px;
+    }
+
+    .section-header {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      margin-bottom: 56px;
+    }
+
+    .section-num {
+      font-family: var(--mono);
+      font-size: 12px;
+      color: var(--accent);
+      letter-spacing: 0.1em;
+    }
+
+    .section-title {
+      font-size: clamp(28px, 4vw, 36px);
+      font-weight: 800;
+      letter-spacing: -0.02em;
+    }
+
+    .section-line {
+      flex: 1;
+      height: 1px;
+      background: var(--border);
+    }
+
+    /* =============================================
+       HERO
+    ============================================= */
+    #hero {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding-top: 80px;
+    }
+
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-family: var(--mono);
+      font-size: 12px;
+      color: var(--accent);
+      border: 1px solid rgba(255,34,68,0.3);
+      padding: 6px 14px;
+      border-radius: 4px;
+      margin-bottom: 32px;
+      width: fit-content;
+      background: rgba(255,34,68,0.05);
+    }
+
+    .hero-badge .dot {
+      width: 6px; height: 6px;
+      border-radius: 50%;
+      background: var(--accent);
+      animation: pulse 2s infinite;
+    }
+
+    .hero-name {
+      font-size: clamp(48px, 8vw, 96px);
+      font-weight: 800;
+      line-height: 0.95;
+      letter-spacing: -0.03em;
+      margin-bottom: 24px;
+    }
+
+    /* ✏️  Modifie la couleur du texte "outline" ici */
+    .hero-name .outline {
+      -webkit-text-stroke: 1.5px var(--accent);
+      color: transparent;
+    }
+
+    .hero-tagline {
+      font-family: var(--mono);
+      font-size: 16px;
+      color: var(--muted);
+      margin-bottom: 48px;
+      max-width: 520px;
+      line-height: 1.9;
+    }
+
+    .hero-tagline .typed-word { color: var(--accent2); }
+
+    .typed-cursor {
+      display: inline-block;
+      width: 2px;
+      height: 1em;
+      background: var(--accent);
+      vertical-align: middle;
+      margin-left: 2px;
+      animation: blink 1s step-end infinite;
+    }
+
+    .hero-cta { display: flex; gap: 16px; flex-wrap: wrap; }
+
+    .btn-primary {
+      display: inline-block;
+      background: var(--accent);
+      color: var(--bg);
+      border: none;
+      padding: 14px 28px;
+      font-family: var(--mono);
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+      letter-spacing: 0.05em;
+      text-decoration: none;
+      clip-path: polygon(0 0, calc(100% - 10px) 0, 100% 10px, 100% 100%, 0 100%);
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(255,34,68,0.3);
+    }
+
+    .btn-secondary {
+      display: inline-block;
+      background: transparent;
+      color: var(--text);
+      border: 1px solid var(--border);
+      padding: 14px 28px;
+      font-family: var(--mono);
+      font-size: 13px;
+      cursor: pointer;
+      letter-spacing: 0.05em;
+      text-decoration: none;
+      transition: border-color 0.2s, color 0.2s;
+    }
+
+    .btn-secondary:hover {
+      border-color: var(--accent2);
+      color: var(--accent2);
+    }
+
+    /* =============================================
+       À PROPOS
+    ============================================= */
+    #about { padding: 120px 0 80px; }
+
+    .about-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 48px;
+      align-items: start;
+    }
+
+    .about-text {
+      font-size: 16px;
+      line-height: 1.85;
+      color: var(--muted);
+    }
+
+    .about-text p { margin-bottom: 16px; }
+    .about-text p:last-child { margin-bottom: 0; }
+    .about-text strong { color: var(--text); }
+    .about-text .code { color: var(--accent); font-family: var(--mono); font-size: 14px; }
+
+    .about-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      padding: 28px;
+      font-family: var(--mono);
+      font-size: 13px;
+    }
+
+    .about-card-title {
+      color: var(--accent2);
+      font-size: 11px;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      margin-bottom: 16px;
+    }
+
+    .about-stat {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 11px 0;
+      border-bottom: 1px solid var(--border);
+      color: var(--muted);
+    }
+
+    .about-stat:last-child { border-bottom: none; }
+    .about-stat .val { color: var(--accent); }
+
+    /* =============================================
+       COMPÉTENCES
+    ============================================= */
+    #skills { padding: 80px 0; }
+
+    .skills-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 2px;
+    }
+
+    .skill-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      padding: 32px 28px;
+      position: relative;
+      overflow: hidden;
+      transition: border-color 0.3s, background 0.3s;
+    }
+
+    /* Barre colorée en haut de chaque carte — modifie les couleurs ici */
+    .skill-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 2px;
+    }
+    .skill-card:nth-child(1)::before { background: var(--accent); }
+    .skill-card:nth-child(2)::before { background: var(--accent2); }
+    .skill-card:nth-child(3)::before { background: var(--accent3); }
+
+    .skill-card:hover {
+      border-color: var(--muted);
+      background: var(--surface2);
+    }
+
+    .skill-icon { font-size: 28px; margin-bottom: 12px; }
+
+    .skill-name {
+      font-size: 15px;
+      font-weight: 700;
+      margin-bottom: 18px;
+      letter-spacing: 0.03em;
+    }
+
+    .skill-tags { display: flex; flex-wrap: wrap; gap: 8px; }
+
+    .skill-tag {
+      font-family: var(--mono);
+      font-size: 11px;
+      padding: 4px 10px;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      color: var(--muted);
+      border-radius: 2px;
+    }
+
+    /* =============================================
+       PROJETS
+    ============================================= */
+    #projects { padding: 80px 0 120px; }
+
+    .projects-list { display: flex; flex-direction: column; gap: 2px; }
+
+    .project-item {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      padding: 32px;
+      display: grid;
+      grid-template-columns: 40px 1fr auto;
+      gap: 24px;
+      align-items: start;
+      text-decoration: none;
+      color: inherit;
+      transition: border-color 0.3s, background 0.3s;
+      cursor: pointer;
+    }
+
+    .project-item:hover {
+      border-color: var(--accent);
+      background: var(--surface2);
+    }
+
+    .project-num {
+      font-family: var(--mono);
+      font-size: 12px;
+      color: var(--accent);
+      padding-top: 4px;
+    }
+
+    .project-title {
+      font-size: 20px;
+      font-weight: 700;
+      margin-bottom: 8px;
+      letter-spacing: -0.01em;
+    }
+
+    .project-desc {
+      font-size: 14px;
+      color: var(--muted);
+      line-height: 1.65;
+      margin-bottom: 16px;
+    }
+
+    .project-stack { display: flex; gap: 8px; flex-wrap: wrap; }
+
+    .stack-tag {
+      font-family: var(--mono);
+      font-size: 11px;
+      padding: 3px 8px;
+      border: 1px solid rgba(0,196,255,0.3);
+      color: var(--accent2);
+      background: rgba(0,196,255,0.05);
+    }
+
+    .project-arrow {
+      font-size: 22px;
+      color: var(--muted);
+      padding-top: 4px;
+      transition: color 0.2s, transform 0.2s;
+    }
+
+    .project-item:hover .project-arrow {
+      color: var(--accent);
+      transform: translate(4px, -4px);
+    }
+
+    /* =============================================
+       FOOTER
+    ============================================= */
+    footer {
+      position: relative;
+      z-index: 1;
+      border-top: 1px solid var(--border);
+      padding: 32px 0;
+    }
+
+    .footer-inner {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-family: var(--mono);
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    .footer-inner .heart { color: var(--accent); }
+
+    /* =============================================
+       ANIMATIONS
+    ============================================= */
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50%       { opacity: 0.3; }
+    }
+
+    @keyframes blink {
+      0%, 100% { opacity: 1; }
+      50%       { opacity: 0; }
+    }
+
+    .fade-in {
+      opacity: 0;
+      transform: translateY(24px);
+      transition: opacity 0.65s ease, transform 0.65s ease;
+    }
+
+    .fade-in.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* =============================================
+       RESPONSIVE
+    ============================================= */
+    @media (max-width: 768px) {
+      nav { padding: 16px 24px; }
+      .nav-links { gap: 20px; }
+      .wrapper { padding: 0 24px; }
+      .hero-name { font-size: clamp(40px, 12vw, 64px); }
+      .about-grid { grid-template-columns: 1fr; }
+      .skills-grid { grid-template-columns: 1fr; }
+      .project-item { grid-template-columns: 36px 1fr; }
+      .project-arrow { display: none; }
+      .footer-inner { flex-direction: column; gap: 8px; text-align: center; }
+    }
+  </style>
+</head>
+
+<body>
+  <!-- Décoration de fond -->
+  <div class="grid-bg"></div>
+  <div class="orb orb-1"></div>
+  <div class="orb orb-2"></div>
+
+  <!-- ============================================
+       NAVIGATION
+       ✏️  Modifie "VotrePrénom" et les liens
+  ============================================= -->
+  <nav>
+    <div class="nav-logo">&lt;Florian/&gt;</div>
+    <ul class="nav-links">
+      <li><a href="#about">À propos</a></li>
+      <li><a href="#skills">Compétences</a></li>
+      <li><a href="#projects">Projets</a></li>
+    </ul>
+  </nav>
+
+  <!-- ============================================
+       HERO
+       ✏️  Modifie ton prénom, le statut, la description
+  ============================================= -->
+  <section id="hero">
+    <div class="wrapper">
+      <div class="hero-badge">
+        <span class="dot"></span>
+        Open to new projects and collaborations 🔥
+      </div>
+
+      <h1 class="hero-name">
+        Bonjour,<br />
+        je suis <span class="outline">Florian</span>
+      </h1>
+
+      <p class="hero-tagline">
+        <span class="typed-word" id="typed-text">Développeur Full-Stack</span><span class="typed-cursor"></span><br />
+        Je construis des expériences web modernes,<br />
+        rapides et accessibles.
+      </p>
+
+      <div class="hero-cta">
+        <a href="#projects" class="btn-primary">Voir mes projets →</a>
+        <a href="#about" class="btn-secondary">En savoir plus</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================
+       À PROPOS
+       ✏️  Modifie le texte et les stats
+  ============================================= -->
+  <section id="about">
+    <div class="wrapper">
+      <div class="section-header fade-in">
+        <span class="section-num">01.</span>
+        <h2 class="section-title">À propos</h2>
+        <div class="section-line"></div>
+      </div>
+
+      <div class="about-grid fade-in">
+        <div>
+          <img src="profil.jpeg" alt="Florian SAVI"
+            style="
+            width: 100%;
+            max-width: 300px;
+            border: 2px solid var(--accent);
+            margin-bottom: 1px;
+            display: block;
+            filter: grayscale(20%);"/>
+        </div>    
+        <div class="about-text">
+          <p>
+            Étudiant en statistique appliquée à l’ENSPD de Parakou, spécialisé en analyse de données et modélisation, 
+            compétent en R et Python, je m’intéresse à l’exploration de données et à la prise de décision basée sur les données.
+            Je développe des projets mêlant data et technologie et suis ouvert à des opportunités en data science et développement.
+          </p>
+          <p>
+            Mon approche : du code <span class="code">propre</span>, des interfaces
+            <span class="code">performantes</span>, et une attention particulière
+            à l'expérience utilisateur, une interprétation <span class="code">fluide</span> et <span class="code">organisée</span> des résultats d'analyses.
+          </p>
+          <p>
+            En dehors du code, je contribue à des projets <strong>open source</strong>.
+          </p>
+        </div>
+
+        <div class="about-card">
+          <div class="about-card-title">// stats.json</div>
+
+          <!-- ✏️  Modifie chaque ligne avec tes vraies infos -->
+          <div class="about-stat"><span>Localisation</span><span class="val">Cotonou, Bénin</span></div>
+          <div class="about-stat"><span>Disponibilité</span><span class="val">Data analyst /Développeur web</span></div>
+          <div class="about-stat"><span>Langues</span><span class="val">Français/ English</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================
+       COMPÉTENCES
+       ✏️  Modifie les catégories et les tags
+  ============================================= -->
+  <section id="skills">
+    <div class="wrapper">
+      <div class="section-header fade-in">
+        <span class="section-num">02.</span>
+        <h2 class="section-title">Compétences</h2>
+        <div class="section-line"></div>
+      </div>
+
+      <div class="skills-grid fade-in">
+        <!-- Carte 1 -->
+        <div class="skill-card">
+          <div class="skill-icon">📊</div>
+          <div class="skill-name">Data & Statistiques</div>
+          <div class="skill-tags">
+            <span class="skill-tag">R</span>
+            <span class="skill-tag">Python</span>
+            <span class="skill-tag">STATA</span>
+            <span class="skill-tag">SPSS</span>
+            <span class="skill-tag">Économétrie</span>
+          </div>
+        </div>
+
+        <!-- Carte 2 -->
+        <div class="skill-card">
+          <div class="skill-icon">🗄️</div>
+          <div class="skill-name">Données & Visualisation</div>
+          <div class="skill-tags">
+            <span class="skill-tag">SQL</span>
+            <span class="skill-tag">Excel</span>
+            <span class="skill-tag">Power BI</span>
+            <span class="skill-tag">Pandas</span>
+            <span class="skill-tag">ggplot2</span>
+          </div>
+        </div>
+
+        <!-- Carte 3 -->
+        <div class="skill-card">
+          <div class="skill-icon">🌐</div>
+          <div class="skill-name">Web & Outils</div>
+          <div class="skill-tags">
+            <span class="skill-tag">HTML</span>
+            <span class="skill-tag">CSS</span>
+            <span class="skill-tag">Git</span>
+            <span class="skill-tag">Jupyter</span>
+            <span class="skill-tag">VS Code</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================
+       PROJETS
+       ✏️  Modifie chaque .project-item avec tes vrais projets
+           Ajoute href="https://..." sur .project-item pour les liens
+  ============================================= -->
+  <section id="projects">
+    <div class="wrapper">
+      <div class="section-header fade-in">
+        <span class="section-num">03.</span>
+        <h2 class="section-title">Projets</h2>
+        <div class="section-line"></div>
+      </div>
+
+      <div class="projects-list fade-in">
+
+        <!-- Projet 1 -->
+        <a class="project-item" href="#" target="_blank" rel="noopener">
+          <span class="project-num">01</span>
+          <div>
+            <div class="project-title">Analyse des pratiques et usages des Technologies de l'Information et de la Communication et impact sur les relations sociales à l'Université de Parakou</div>
+            <p class="project-desc">
+              Étude statistique sur l'usage des TIC et leurs implications dans le quotidien universitaire
+            </p>
+            <div class="project-stack">
+              <span class="stack-tag">R</span>
+              <span class="stack-tag">ggplot2</span>
+              <span class="stack-tag">Économétrie</span>
+              <span class="stack-tag">RMarkdown</span>
+            </div>
+          </div>
+          <span class="project-arrow">↗</span>
+        </a>
+
+        <!-- Projet 2 — remplace par un vrai projet si tu en as un autre -->
+        <a class="project-item" href="#" target="_blank" rel="noopener">
+          <span class="project-num">02</span>
+          <div>
+            <div class="project-title">Dashboard Portfolio — ce site</div>
+            <p class="project-desc">
+              Conception et développement de ce portfolio personnel from scratch en HTML/CSS pur,
+              sans framework. Design dark mode, animations CSS et effet typewriter en JavaScript vanilla.
+            </p>
+            <div class="project-stack">
+              <span class="stack-tag">HTML</span>
+              <span class="stack-tag">CSS</span>
+              <span class="stack-tag">JavaScript</span>
+            </div>
+          </div>
+          <span class="project-arrow">↗</span>
+        </a>
+
+        <!-- Projet 3 — espace réservé pour un futur projet -->
+        <a class="project-item" href="#" target="_blank" rel="noopener">
+          <span class="project-num">03</span>
+          <div>
+            <div class="project-title">Projet à venir 🚧</div>
+            <p class="project-desc">
+              Un nouveau projet web est en cours de développement. Création de site web pour aider les étudiants à retrouver les bourses disponibles pour leur filière.
+            </p>
+            <div class="project-stack">
+              <span class="stack-tag">Python</span>
+              <span class="stack-tag">Power BI</span>
+              <span class="stack-tag">SQL</span>
+            </div>
+          </div>
+          <span class="project-arrow">↗</span>
+        </a>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================
+       FOOTER
+       ✏️  Modifie ton nom et l'année
+  ============================================= -->
+  <footer>
+    <div class="wrapper">
+      <div class="footer-inner">
+        <span>© 2026 — Florian SAVI</span>
+        <span>Conçu &amp; développé avec <span class="heart">♥</span></span>
+      </div>
+    </div>
+  </footer>
+
+  <!-- ============================================
+       JAVASCRIPT
+       Effet de frappe + animations au scroll
+  ============================================= -->
+  <script>
+    /* --- Effet de frappe (typewriter) ---
+       ✏️  Modifie le tableau WORDS avec tes propres phrases */
+    const WORDS = [
+      "Étudiant en Statistique Appliquée",
+      "Data Analyst en devenir",
+      "Passionné par le développement web",
+      "Problem Solver"
+    ];
+
+    let wordIdx = 0, charIdx = 0, deleting = false;
+    const el = document.getElementById("typed-text");
+
+    function type() {
+      const current = WORDS[wordIdx];
+      if (!deleting) {
+        el.textContent = current.slice(0, charIdx + 1);
+        charIdx++;
+        if (charIdx === current.length) {
+          deleting = true;
+          setTimeout(type, 1600);
+          return;
+        }
+      } else {
+        el.textContent = current.slice(0, charIdx - 1);
+        charIdx--;
+        if (charIdx === 0) {
+          deleting = false;
+          wordIdx = (wordIdx + 1) % WORDS.length;
+        }
+      }
+      setTimeout(type, deleting ? 40 : 80);
+    }
+    type();
+
+    /* --- Animations fade-in au scroll --- */
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach((entry, i) => {
+        if (entry.isIntersecting) {
+          setTimeout(() => entry.target.classList.add("visible"), i * 80);
+          observer.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0, rootMargin: "0px 0px -50px 0px" });
+
+    document.querySelectorAll(".fade-in").forEach(el => observer.observe(el));
+
+    /* Déclenche immédiatement les éléments déjà visibles au chargement */
+    setTimeout(() => {
+      document.querySelectorAll(".fade-in:not(.visible)").forEach(el => {
+        const rect = el.getBoundingClientRect();
+        if (rect.top < window.innerHeight) el.classList.add("visible");
+      });
+    }, 100);
+  </script>
+</body>
+</html>
